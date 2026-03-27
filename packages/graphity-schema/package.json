@@ -22,7 +22,7 @@
     "core-js": "^3.2.1"
   },
   "peerDependencies": {
-    "graphql": "^15.0.0"
+    "graphql": "^15.0.0 || ^16.0.0"
   },
   "gitHead": "739211f48969b00d15c626bf9450af2f92764888"
 }

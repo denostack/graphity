@@ -16,7 +16,7 @@
     "build": "rimraf ./lib && tsc && babel ./src --out-dir ./lib --extensions \".ts\" --ignore \"src/**/*.test.ts\""
   },
   "peerDependencies": {
-    "graphql": "^15.0.0"
+    "graphql": "^15.0.0 || ^16.0.0"
   },
   "dependencies": {
     "@graphity/container": "^0.9.0",
