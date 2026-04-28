@@ -1,8 +1,0 @@
-{
-  "baseUrl": ".",
-  "paths": {
-    "graphity": ["./packages/graphity"],
-    "@graphity/*": ["./packages/graphity-*"],
-    "@graphity-extensions/*": ["./extensions/*"]
-  }
-}

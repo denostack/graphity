@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout Deno Module
+        uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Format
+        run: deno fmt --check
+      - name: Lint
+        run: deno lint
+      - name: Unit Test
+        run: deno test --coverage=coverage
+      - name: Create coverage report
+        run: deno coverage ./coverage --lcov > coverage.lcov
+      - name: Collect coverage
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: denostack/graphity
+          files: ./coverage.lcov
+      - name: Build Module
+        run: deno task build:npm
