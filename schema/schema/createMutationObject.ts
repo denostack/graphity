@@ -1,16 +1,15 @@
-import { GraphQLArgument, GraphQLObjectType, isObjectType } from 'graphql'
+import { GraphQLArgument, GraphQLObjectType, isObjectType } from "graphql";
 
-import { MetadataStorable } from '../interfaces/metadata'
-import { MiddlewareClass } from '../interfaces/middleware'
-import { resolveEntityFactory } from './resolveEntityFactory'
-import { resolveReturnEntityFactory } from './resolveReturnEntityFactory'
-
+import { MetadataStorable } from "../interfaces/metadata";
+import { MiddlewareClass } from "../interfaces/middleware";
+import { resolveEntityFactory } from "./resolveEntityFactory";
+import { resolveReturnEntityFactory } from "./resolveReturnEntityFactory";
 
 export interface CreatMutationObjectParams {
-  storage: MetadataStorable
-  name: string
-  middlewares: MiddlewareClass[]
-  resolvers: Function[]
+  storage: MetadataStorable;
+  name: string;
+  middlewares: MiddlewareClass[];
+  resolvers: Function[];
 }
 
 export function createMutationObject({
@@ -19,30 +18,29 @@ export function createMutationObject({
   middlewares,
   resolvers,
 }: CreatMutationObjectParams): GraphQLObjectType {
-
   const mutationObjectType = new GraphQLObjectType({
     name,
     fields: {},
-  })
+  });
 
   for (const resolver of resolvers) {
-    const metaResolver = storage.resolvers.get(resolver)
+    const metaResolver = storage.resolvers.get(resolver);
     if (!metaResolver) {
-      continue
+      continue;
     }
 
-    const resolverObjectType = resolveEntityFactory(metaResolver.typeFactory, { storage })
+    const resolverObjectType = resolveEntityFactory(metaResolver.typeFactory, { storage });
 
     for (const metaMutation of storage.mutations.get(resolver) ?? []) {
-      const parentObjectType = typeof metaMutation.parent === 'function'
+      const parentObjectType = typeof metaMutation.parent === "function"
         ? resolveEntityFactory(metaMutation.parent, { storage })
-        : mutationObjectType
+        : mutationObjectType;
 
       if (!isObjectType(parentObjectType)) {
-        continue
+        continue;
       }
 
-      const fields = parentObjectType.getFields()
+      const fields = parentObjectType.getFields();
 
       fields[metaMutation.name] = {
         name: metaMutation.name,
@@ -57,15 +55,15 @@ export function createMutationObject({
               deprecationReason: arg.deprecationReason,
               extensions: null,
               astNode: null,
-            }
+            };
           })
           : [],
         description: metaMutation.description,
-        isDeprecated: typeof metaMutation.deprecated === 'string',
-        deprecationReason: typeof metaMutation.deprecated === 'string' ? metaMutation.deprecated : undefined,
+        isDeprecated: typeof metaMutation.deprecated === "string",
+        deprecationReason: typeof metaMutation.deprecated === "string" ? metaMutation.deprecated : undefined,
         extensions: null,
         astNode: null,
-      }
+      };
       storage.saveGraphQLFieldResolve(parentObjectType, {
         name: metaMutation.name,
         middlewares: parentObjectType === mutationObjectType
@@ -73,8 +71,8 @@ export function createMutationObject({
           : metaResolver.middlewares.concat(metaMutation.middlewares),
         resolver: metaMutation.target,
         resolve: metaMutation.target.prototype[metaMutation.property],
-      })
+      });
     }
   }
-  return mutationObjectType
+  return mutationObjectType;
 }

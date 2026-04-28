@@ -1,25 +1,24 @@
-import { ApolloServer, Config } from 'apollo-server-lambda'
-import { APIGatewayProxyCallback, APIGatewayProxyEvent, APIGatewayProxyHandler, Context } from 'aws-lambda'
-import { applyHttpContext, Graphity } from 'graphity'
+import { ApolloServer, Config } from "apollo-server-lambda";
+import { APIGatewayProxyCallback, APIGatewayProxyEvent, APIGatewayProxyHandler, Context } from "aws-lambda";
+import { applyHttpContext, Graphity } from "graphity";
 
-import { eventToHttpRequest } from './event-to-http-request'
+import { eventToHttpRequest } from "./event-to-http-request";
 
 export interface ServerLambdaOptions {
-  callbackWaitsForEmptyEventLoop?: boolean
-  apolloOptions?: Omit<Config, 'schema' | 'context'>
+  callbackWaitsForEmptyEventLoop?: boolean;
+  apolloOptions?: Omit<Config, "schema" | "context">;
   cors?: {
-    origin?: boolean | string | string[],
-    methods?: string | string[],
-    allowedHeaders?: string | string[],
-    exposedHeaders?: string | string[],
-    credentials?: boolean,
-    maxAge?: number,
-  }
+    origin?: boolean | string | string[];
+    methods?: string | string[];
+    allowedHeaders?: string | string[];
+    exposedHeaders?: string | string[];
+    credentials?: boolean;
+    maxAge?: number;
+  };
 }
 
 export class ServerLambda {
-
-  apolloHandlerPromise: Promise<APIGatewayProxyHandler> | null = null
+  apolloHandlerPromise: Promise<APIGatewayProxyHandler> | null = null;
 
   constructor(public graphity: Graphity, public _options: ServerLambdaOptions = {}) {
   }
@@ -30,18 +29,24 @@ export class ServerLambda {
         const apollo = new ApolloServer({
           ...this._options.apolloOptions,
           schema: this.graphity.createSchema() as any,
-          context: (context: { event: APIGatewayProxyEvent}) => applyHttpContext(this.graphity, eventToHttpRequest(context.event)),
-        })
+          context: (context: { event: APIGatewayProxyEvent }) =>
+            applyHttpContext(this.graphity, eventToHttpRequest(context.event)),
+        });
         return apollo.createHandler({
           expressGetMiddlewareOptions: {
             cors: this._options.cors,
           },
-        })
-      })
+        });
+      });
     }
-    if (this._options.callbackWaitsForEmptyEventLoop !== null && typeof this._options.callbackWaitsForEmptyEventLoop !== 'undefined') {
-      context.callbackWaitsForEmptyEventLoop = this._options.callbackWaitsForEmptyEventLoop
+    if (
+      this._options.callbackWaitsForEmptyEventLoop !== null &&
+      typeof this._options.callbackWaitsForEmptyEventLoop !== "undefined"
+    ) {
+      context.callbackWaitsForEmptyEventLoop = this._options.callbackWaitsForEmptyEventLoop;
     }
-    this.apolloHandlerPromise.then((handler) => { handler(event, context, callback) })
+    this.apolloHandlerPromise.then((handler) => {
+      handler(event, context, callback);
+    });
   }
 }

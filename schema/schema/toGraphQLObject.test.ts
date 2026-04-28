@@ -1,65 +1,69 @@
 /* eslint-disable max-classes-per-file,@typescript-eslint/no-extraneous-class */
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLID } from 'graphql'
+import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 
-import { Field } from '../decorators/field'
-import { GraphityEntity } from '../decorators/graphity-entity'
-import { MetadataStorage } from '../metadata/MetadataStorage'
-import { toGraphQLObject } from './toGraphQLObject'
+import { Field } from "../decorators/field";
+import { GraphityEntity } from "../decorators/graphity-entity";
+import { MetadataStorage } from "../metadata/MetadataStorage";
+import { toGraphQLObject } from "./toGraphQLObject";
 
-
-describe('@graphity/schema, schema/toGraphQLObject', () => {
-
+describe("@graphity/schema, schema/toGraphQLObject", () => {
   beforeEach(() => {
-    MetadataStorage.clearGlobalStorage()
-  })
+    MetadataStorage.clearGlobalStorage();
+  });
 
-  it('test toGraphQLObject, undefined graphity entity', () => {
+  it("test toGraphQLObject, undefined graphity entity", () => {
     class User {
     }
 
-    expect(toGraphQLObject(User)).toEqualGraphQLType('type User')
-  })
+    expect(toGraphQLObject(User)).toEqualGraphQLType("type User");
+  });
 
-  it('test toGraphQLObject, empty class', () => {
+  it("test toGraphQLObject, empty class", () => {
     @GraphityEntity()
     class User {
     }
 
-    expect(toGraphQLObject(User)).toEqualGraphQLType('type User')
-  })
+    expect(toGraphQLObject(User)).toEqualGraphQLType("type User");
+  });
 
-  it('test toGraphQLObject, full class', () => {
+  it("test toGraphQLObject, full class", () => {
     @GraphityEntity()
     class User {
       @Field(GraphQLID, {
-        description: 'ID Type',
+        description: "ID Type",
       })
-      id!: string
+      id!: string;
 
-      @Field(_ => GraphQLString)
-      username!: string
+      @Field((_) => GraphQLString)
+      username!: string;
 
-      @Field(_ => GraphQLString, {
-        name: 'aliasLegacyName',
-        deprecated: 'use other property',
+      @Field((_) => GraphQLString, {
+        name: "aliasLegacyName",
+        deprecated: "use other property",
       })
-      legacySomething!: string
+      legacySomething!: string;
 
-      @Field(GraphQLNonNull(GraphQLList(GraphQLNonNull(new GraphQLObjectType({
-        name: 'Social',
-        fields: {
-          type: { type: GraphQLNonNull(GraphQLString) },
-        },
-      })))))
-      socials!: { type: string }[]
+      @Field(GraphQLNonNull(GraphQLList(GraphQLNonNull(
+        new GraphQLObjectType({
+          name: "Social",
+          fields: {
+            type: { type: GraphQLNonNull(GraphQLString) },
+          },
+        }),
+      ))))
+      socials!: { type: string }[];
 
-      @Field(() => GraphQLNonNull(GraphQLList(GraphQLNonNull(new GraphQLObjectType({
-        name: 'Role',
-        fields: {
-          name: { type: GraphQLNonNull(GraphQLString) },
-        },
-      })))))
-      roles!: { name: string }[]
+      @Field(() =>
+        GraphQLNonNull(GraphQLList(GraphQLNonNull(
+          new GraphQLObjectType({
+            name: "Role",
+            fields: {
+              name: { type: GraphQLNonNull(GraphQLString) },
+            },
+          }),
+        )))
+      )
+      roles!: { name: string }[];
     }
 
     expect(toGraphQLObject(User)).toEqualGraphQLType(`type User {
@@ -69,48 +73,48 @@ describe('@graphity/schema, schema/toGraphQLObject', () => {
       aliasLegacyName: String @deprecated(reason: "use other property")
       socials: [Social!]!
       roles: [Role!]!
-    }`)
-  })
+    }`);
+  });
 
-  it('test toGraphQLObject, with other class', () => {
+  it("test toGraphQLObject, with other class", () => {
     @GraphityEntity()
     class User {
       @Field(GraphQLID)
-      id!: string
+      id!: string;
 
       @Field(() => toGraphQLObject(Role))
-      role!: Role
+      role!: Role;
 
       @Field(() => toGraphQLObject(Role))
-      otherRole!: Role
+      otherRole!: Role;
     }
 
     @GraphityEntity()
     class Role {
       @Field(GraphQLID)
-      id!: string
+      id!: string;
 
       @Field(GraphQLString)
-      name!: string
+      name!: string;
 
       @Field(() => User) // also use class!
-      user!: User
+      user!: User;
 
       @Field(() => User) // also use class!
-      firstUser!: User
+      firstUser!: User;
     }
 
     expect(toGraphQLObject(User)).toEqualGraphQLType(`type User {
       id: ID
       role: Role
       otherRole: Role
-    }`)
+    }`);
 
     expect(toGraphQLObject(Role)).toEqualGraphQLType(`type Role {
       id: ID
       name: String
       user: User
       firstUser: User
-    }`)
-  })
-})
+    }`);
+  });
+});

@@ -1,36 +1,44 @@
 /* eslint-disable max-classes-per-file,@typescript-eslint/no-extraneous-class */
-import { GraphQLNonNull, GraphQLID, GraphQLObjectType, GraphQLInt, GraphQLList, GraphQLString, GraphQLInputObjectType, GraphQLUnionType, GraphQLInterfaceType } from 'graphql'
+import {
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql";
 
-import { Field } from '../decorators/field'
-import { GraphityEntity } from '../decorators/graphity-entity'
-import { GraphityResolver } from '../decorators/graphity-resolver'
-import { Mutation } from '../decorators/mutation'
-import { Query } from '../decorators/query'
-import { MiddlewareCarry, MiddlewareClass, MiddlewareNext } from '../interfaces/middleware'
-import { MetadataStorage } from '../metadata/MetadataStorage'
-import { createGraphQLSchema } from './createGraphQLSchema'
-import { toGraphQLObject } from './toGraphQLObject'
+import { Field } from "../decorators/field";
+import { GraphityEntity } from "../decorators/graphity-entity";
+import { GraphityResolver } from "../decorators/graphity-resolver";
+import { Mutation } from "../decorators/mutation";
+import { Query } from "../decorators/query";
+import { MiddlewareCarry, MiddlewareClass, MiddlewareNext } from "../interfaces/middleware";
+import { MetadataStorage } from "../metadata/MetadataStorage";
+import { createGraphQLSchema } from "./createGraphQLSchema";
+import { toGraphQLObject } from "./toGraphQLObject";
 
-
-describe('@graphity/schema, schema/createGraphQLSchema', () => {
-
+describe("@graphity/schema, schema/createGraphQLSchema", () => {
   beforeEach(() => {
-    MetadataStorage.clearGlobalStorage()
-  })
+    MetadataStorage.clearGlobalStorage();
+  });
 
-  it('test createGraphQLSchema, empty', async () => {
+  it("test createGraphQLSchema, empty", async () => {
     const schema = createGraphQLSchema({
       resolvers: [],
-    })
+    });
 
-    expect(schema).toEqualGraphQLSchema('')
-  })
+    expect(schema).toEqualGraphQLSchema("");
+  });
 
-  it('test createGraphQLSchema, only query', async () => {
+  it("test createGraphQLSchema, only query", async () => {
     @GraphityEntity()
     class User {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
     @GraphityResolver(() => User)
@@ -45,7 +53,7 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       resolvers: [
         UserResolver,
       ],
-    })
+    });
 
     expect(schema).toEqualGraphQLSchema(`
       type Query {
@@ -55,14 +63,14 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       type User {
         id: ID!
       }
-    `)
-  })
+    `);
+  });
 
-  it('test createGraphQLSchema, only mutation', async () => {
+  it("test createGraphQLSchema, only mutation", async () => {
     @GraphityEntity()
     class User {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
     @GraphityResolver(() => User)
@@ -73,12 +81,11 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       }
     }
 
-
     const schema = createGraphQLSchema({
       resolvers: [
         UserResolver,
       ],
-    })
+    });
 
     expect(schema).toEqualGraphQLSchema(`
       type Mutation {
@@ -88,96 +95,103 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       type User {
         id: ID!
       }
-    `)
-  })
+    `);
+  });
 
-  it('test createGraphQLSchema, all', async () => {
+  it("test createGraphQLSchema, all", async () => {
     @GraphityEntity({
-      description: 'article entity',
+      description: "article entity",
     })
     class Article {
-      @Field(type => GraphQLNonNull(GraphQLID), {
-        description: 'article id',
+      @Field((type) => GraphQLNonNull(GraphQLID), {
+        description: "article id",
       })
-      id!: string
+      id!: string;
 
-      @Field(type => GraphQLNonNull(GraphQLString))
-      title!: string
+      @Field((type) => GraphQLNonNull(GraphQLString))
+      title!: string;
 
-      @Field(type => GraphQLString)
-      contents?: string | null
+      @Field((type) => GraphQLString)
+      contents?: string | null;
     }
 
     @GraphityEntity()
     class User {
-      @Field(type => GraphQLNonNull(GraphQLID))
-      id!: string
+      @Field((type) => GraphQLNonNull(GraphQLID))
+      id!: string;
 
-      @Field(type => GraphQLNonNull(GraphQLString))
-      name!: string
+      @Field((type) => GraphQLNonNull(GraphQLString))
+      name!: string;
     }
 
-
-    @GraphityResolver(returns => Article)
+    @GraphityResolver((returns) => Article)
     class ArticleResolver {
-
-      prefix = 'article (id='
-      suffix = ')'
+      prefix = "article (id=";
+      suffix = ")";
 
       @Query({
         input: {
           id: { type: GraphQLNonNull(GraphQLID) },
         },
-        description: 'this is article',
+        description: "this is article",
       })
-      async article(_: null, input: {id: string}) {
+      async article(_: null, input: { id: string }) {
         //
       }
 
       @Query({
-        returns: node => new GraphQLObjectType({
-          name: 'ListOfArticles',
-          fields: {
-            count: { type: GraphQLNonNull(GraphQLInt) },
-            nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
-          },
-        }),
+        returns: (node) =>
+          new GraphQLObjectType({
+            name: "ListOfArticles",
+            fields: {
+              count: { type: GraphQLNonNull(GraphQLInt) },
+              nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
+            },
+          }),
         input: {
           take: { type: GraphQLInt },
           offset: { type: GraphQLInt },
         },
       })
-      async articles(_: null, params: { take?: number, offset?: number }) {
+      async articles(_: null, params: { take?: number; offset?: number }) {
         //
       }
 
       @Mutation({
         input: {
-          input: { type: GraphQLNonNull(new GraphQLInputObjectType({
-            name: 'InputCreateArticle',
-            fields: {
-              title: { type: GraphQLString },
-            },
-          })) },
+          input: {
+            type: GraphQLNonNull(
+              new GraphQLInputObjectType({
+                name: "InputCreateArticle",
+                fields: {
+                  title: { type: GraphQLString },
+                },
+              }),
+            ),
+          },
         },
-        description: 'this is createArticle',
+        description: "this is createArticle",
       })
-      async createArticle(_: null, input: {title: string}) {
+      async createArticle(_: null, input: { title: string }) {
         //
       }
 
       @Mutation({
         input: {
           id: { type: GraphQLNonNull(GraphQLID) },
-          input: { type: GraphQLNonNull(new GraphQLInputObjectType({
-            name: 'InputUpdateArticle',
-            fields: {
-              title: { type: GraphQLString },
-            },
-          })) },
+          input: {
+            type: GraphQLNonNull(
+              new GraphQLInputObjectType({
+                name: "InputUpdateArticle",
+                fields: {
+                  title: { type: GraphQLString },
+                },
+              }),
+            ),
+          },
         },
       })
-      async updateArticle(_: null, input: {id: string, title?: string | null}) {
+      async updateArticle(_: null, input: { id: string; title?: string | null }) {
         //
       }
 
@@ -188,56 +202,57 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
           },
         },
       })
-      async deleteArticle(_: null, input: {id: string}) {
+      async deleteArticle(_: null, input: { id: string }) {
         //
       }
     }
 
-    @GraphityResolver(returns => User)
+    @GraphityResolver((returns) => User)
     class UserResolver {
-
       @Query({
         input: {
           id: { type: GraphQLNonNull(GraphQLID) },
         },
       })
-      user(parent: null, input: {id: string}) {
+      user(parent: null, input: { id: string }) {
         return Object.assign(new User(), {
           id: `${input.id}`,
           name: `user${input.id}`,
-        })
+        });
       }
 
       @Query({
         parent: () => Article,
-        name: 'user',
+        name: "user",
       })
-      userFromArticle(parent: Article, input: {id: string}) {
+      userFromArticle(parent: Article, input: { id: string }) {
         //
       }
 
       @Query({
-        parent: type => User,
-        returns: node => GraphQLNonNull(new GraphQLObjectType({
-          name: 'ListOfFriends',
-          fields: {
-            count: { type: GraphQLNonNull(GraphQLInt) },
-            nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
-          },
-        })),
+        parent: (type) => User,
+        returns: (node) =>
+          GraphQLNonNull(
+            new GraphQLObjectType({
+              name: "ListOfFriends",
+              fields: {
+                count: { type: GraphQLNonNull(GraphQLInt) },
+                nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
+              },
+            }),
+          ),
       })
       friends(parent: User) {
         //
       }
     }
 
-
     const schema = createGraphQLSchema({
       resolvers: [
         ArticleResolver,
         UserResolver,
       ],
-    })
+    });
 
     // schema.
     expect(schema).toEqualGraphQLSchema(`
@@ -288,42 +303,42 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
         id: ID!
         name: String!
       }
-    `)
-  })
+    `);
+  });
 
-  it('test createSchema middlewares', async () => {
+  it("test createSchema middlewares", async () => {
     function createAnonymousMiddleware(name: string): MiddlewareClass {
       return class {
-        static middleware = name
+        static middleware = name;
         handle({ parent, args, context, info }: MiddlewareCarry<any, any>, next: MiddlewareNext<any, any>) {
-          return next()
+          return next();
         }
-      }
+      };
     }
 
     @GraphityEntity()
     class Comment {
-      @Field(type => GraphQLNonNull(GraphQLID))
-      id!: string
+      @Field((type) => GraphQLNonNull(GraphQLID))
+      id!: string;
 
-      @Field(type => GraphQLNonNull(GraphQLString), {
+      @Field((type) => GraphQLNonNull(GraphQLString), {
         middlewares: [
-          createAnonymousMiddleware('Comment.name 1'),
-          createAnonymousMiddleware('Comment.name 2'),
+          createAnonymousMiddleware("Comment.name 1"),
+          createAnonymousMiddleware("Comment.name 2"),
         ],
       })
-      name!: string
+      name!: string;
 
-      @Field(type => GraphQLNonNull(GraphQLInt), {
+      @Field((type) => GraphQLNonNull(GraphQLInt), {
         resolve: () => 30,
       })
-      age!: string
+      age!: string;
     }
 
-    @GraphityResolver(returns => Comment, {
+    @GraphityResolver((returns) => Comment, {
       middlewares: [
-        createAnonymousMiddleware('Comment 1'),
-        createAnonymousMiddleware('Comment 2'),
+        createAnonymousMiddleware("Comment 1"),
+        createAnonymousMiddleware("Comment 2"),
       ],
     })
     class CommentResolver {
@@ -331,25 +346,28 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
         input: {
           id: { type: GraphQLNonNull(GraphQLID) },
         },
-        middlewares: createAnonymousMiddleware('Query.comment 1'),
+        middlewares: createAnonymousMiddleware("Query.comment 1"),
       })
       comment() {
         //
       }
 
       @Query({
-        parent: type => Comment,
+        parent: (type) => Comment,
         middlewares: [
-          createAnonymousMiddleware('Comment.comments 1'),
-          createAnonymousMiddleware('Comment.comments 2'),
+          createAnonymousMiddleware("Comment.comments 1"),
+          createAnonymousMiddleware("Comment.comments 2"),
         ],
-        returns: node => GraphQLNonNull(new GraphQLObjectType({
-          name: 'ListOfComments',
-          fields: {
-            count: { type: GraphQLNonNull(GraphQLInt) },
-            nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
-          },
-        })),
+        returns: (node) =>
+          GraphQLNonNull(
+            new GraphQLObjectType({
+              name: "ListOfComments",
+              fields: {
+                count: { type: GraphQLNonNull(GraphQLInt) },
+                nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(node))) },
+              },
+            }),
+          ),
       })
       comments() {
         //
@@ -365,8 +383,8 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       @Mutation({
         input: { id: { type: GraphQLNonNull(GraphQLID) } },
         middlewares: [
-          createAnonymousMiddleware('Mut.deleteComment 1'),
-          createAnonymousMiddleware('Mut.deleteComment 2'),
+          createAnonymousMiddleware("Mut.deleteComment 1"),
+          createAnonymousMiddleware("Mut.deleteComment 2"),
         ],
       })
       deleteComment() {
@@ -376,151 +394,151 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
 
     const schema = createGraphQLSchema({
       rootMiddlewares: [
-        createAnonymousMiddleware('Root 1'),
-        createAnonymousMiddleware('Root 2'),
+        createAnonymousMiddleware("Root 1"),
+        createAnonymousMiddleware("Root 2"),
       ],
       queryMiddlewares: [
-        createAnonymousMiddleware('Qry 1'),
-        createAnonymousMiddleware('Qry 2'),
+        createAnonymousMiddleware("Qry 1"),
+        createAnonymousMiddleware("Qry 2"),
       ],
       mutationMiddlewares: [
-        createAnonymousMiddleware('Mut 1'),
-        createAnonymousMiddleware('Mut 2'),
+        createAnonymousMiddleware("Mut 1"),
+        createAnonymousMiddleware("Mut 2"),
       ],
       subscriptionMiddlewares: [
-        createAnonymousMiddleware('Sub 1'),
-        createAnonymousMiddleware('Sub 2'),
+        createAnonymousMiddleware("Sub 1"),
+        createAnonymousMiddleware("Sub 2"),
       ],
       resolvers: [
         CommentResolver,
       ],
-    })
+    });
 
-    const storage = MetadataStorage.getGlobalStorage()
+    const storage = MetadataStorage.getGlobalStorage();
 
     expect(storage.findGraphQLFieldResolves(schema.getQueryType()!)).toEqual([
       {
-        name: 'comment',
+        name: "comment",
         middlewares: [
-          expect.objectContaining({ middleware: 'Root 1' }),
-          expect.objectContaining({ middleware: 'Root 2' }),
-          expect.objectContaining({ middleware: 'Qry 1' }),
-          expect.objectContaining({ middleware: 'Qry 2' }),
-          expect.objectContaining({ middleware: 'Comment 1' }),
-          expect.objectContaining({ middleware: 'Comment 2' }),
-          expect.objectContaining({ middleware: 'Query.comment 1' }),
+          expect.objectContaining({ middleware: "Root 1" }),
+          expect.objectContaining({ middleware: "Root 2" }),
+          expect.objectContaining({ middleware: "Qry 1" }),
+          expect.objectContaining({ middleware: "Qry 2" }),
+          expect.objectContaining({ middleware: "Comment 1" }),
+          expect.objectContaining({ middleware: "Comment 2" }),
+          expect.objectContaining({ middleware: "Query.comment 1" }),
         ],
         resolver: CommentResolver,
         resolve: CommentResolver.prototype.comment,
       },
-    ])
+    ]);
 
     expect(storage.findGraphQLFieldResolves(schema.getMutationType()!)).toEqual([
       {
-        name: 'createComment',
+        name: "createComment",
         middlewares: [
-          expect.objectContaining({ middleware: 'Root 1' }),
-          expect.objectContaining({ middleware: 'Root 2' }),
-          expect.objectContaining({ middleware: 'Mut 1' }),
-          expect.objectContaining({ middleware: 'Mut 2' }),
-          expect.objectContaining({ middleware: 'Comment 1' }),
-          expect.objectContaining({ middleware: 'Comment 2' }),
+          expect.objectContaining({ middleware: "Root 1" }),
+          expect.objectContaining({ middleware: "Root 2" }),
+          expect.objectContaining({ middleware: "Mut 1" }),
+          expect.objectContaining({ middleware: "Mut 2" }),
+          expect.objectContaining({ middleware: "Comment 1" }),
+          expect.objectContaining({ middleware: "Comment 2" }),
         ],
         resolver: CommentResolver,
         resolve: CommentResolver.prototype.createComment,
       },
       {
-        name: 'deleteComment',
+        name: "deleteComment",
         middlewares: [
-          expect.objectContaining({ middleware: 'Root 1' }),
-          expect.objectContaining({ middleware: 'Root 2' }),
-          expect.objectContaining({ middleware: 'Mut 1' }),
-          expect.objectContaining({ middleware: 'Mut 2' }),
-          expect.objectContaining({ middleware: 'Comment 1' }),
-          expect.objectContaining({ middleware: 'Comment 2' }),
-          expect.objectContaining({ middleware: 'Mut.deleteComment 1' }),
-          expect.objectContaining({ middleware: 'Mut.deleteComment 2' }),
+          expect.objectContaining({ middleware: "Root 1" }),
+          expect.objectContaining({ middleware: "Root 2" }),
+          expect.objectContaining({ middleware: "Mut 1" }),
+          expect.objectContaining({ middleware: "Mut 2" }),
+          expect.objectContaining({ middleware: "Comment 1" }),
+          expect.objectContaining({ middleware: "Comment 2" }),
+          expect.objectContaining({ middleware: "Mut.deleteComment 1" }),
+          expect.objectContaining({ middleware: "Mut.deleteComment 2" }),
         ],
         resolver: CommentResolver,
         resolve: CommentResolver.prototype.deleteComment,
       },
-    ])
+    ]);
 
-    expect(storage.findGraphQLFieldResolves(schema.getType('Comment') as any)).toEqual([
+    expect(storage.findGraphQLFieldResolves(schema.getType("Comment") as any)).toEqual([
       {
-        name: 'id',
+        name: "id",
+        middlewares: [],
+        resolve: null,
+      },
+      {
+        name: "name",
         middlewares: [
+          expect.objectContaining({ middleware: "Comment.name 1" }),
+          expect.objectContaining({ middleware: "Comment.name 2" }),
         ],
         resolve: null,
       },
       {
-        name: 'name',
-        middlewares: [
-          expect.objectContaining({ middleware: 'Comment.name 1' }),
-          expect.objectContaining({ middleware: 'Comment.name 2' }),
-        ],
-        resolve: null,
-      },
-      {
-        name: 'age',
+        name: "age",
         middlewares: [],
         resolve: expect.any(Function),
       },
       {
-        name: 'comments',
+        name: "comments",
         middlewares: [
-          expect.objectContaining({ middleware: 'Comment 1' }),
-          expect.objectContaining({ middleware: 'Comment 2' }),
-          expect.objectContaining({ middleware: 'Comment.comments 1' }),
-          expect.objectContaining({ middleware: 'Comment.comments 2' }),
+          expect.objectContaining({ middleware: "Comment 1" }),
+          expect.objectContaining({ middleware: "Comment 2" }),
+          expect.objectContaining({ middleware: "Comment.comments 1" }),
+          expect.objectContaining({ middleware: "Comment.comments 2" }),
         ],
         resolver: CommentResolver,
         resolve: CommentResolver.prototype.comments,
       },
-    ])
-  })
+    ]);
+  });
 
-  it('test createGraphQLSchema, union', async () => {
+  it("test createGraphQLSchema, union", async () => {
     @GraphityEntity()
     class Movie {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
     @GraphityEntity()
     class Actor {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
-    @GraphityResolver(() => new GraphQLUnionType({
-      name: 'Result',
-      types: [
-        toGraphQLObject(Movie),
-        toGraphQLObject(Actor),
-      ],
-      resolveType: (value) => {
-        if (value instanceof Movie) {
-          return toGraphQLObject(Movie)
-        }
-        return toGraphQLObject(Actor)
-      },
-    }))
+    @GraphityResolver(() =>
+      new GraphQLUnionType({
+        name: "Result",
+        types: [
+          toGraphQLObject(Movie),
+          toGraphQLObject(Actor),
+        ],
+        resolveType: (value) => {
+          if (value instanceof Movie) {
+            return toGraphQLObject(Movie);
+          }
+          return toGraphQLObject(Actor);
+        },
+      })
+    )
     class ResultResolver {
       @Query({
-        returns: node => GraphQLNonNull(GraphQLList(GraphQLNonNull(node))),
+        returns: (node) => GraphQLNonNull(GraphQLList(GraphQLNonNull(node))),
       })
       resultPagination() {
         //
       }
     }
 
-
     const schema = createGraphQLSchema({
       resolvers: [
         ResultResolver,
       ],
-    })
+    });
 
     expect(schema).toEqualGraphQLSchema(`
       type Actor {
@@ -536,33 +554,30 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       }
 
       union Result = Actor | Movie
-    `)
+    `);
 
-    const storage = MetadataStorage.getGlobalStorage()
+    const storage = MetadataStorage.getGlobalStorage();
 
     expect(storage.findGraphQLFieldResolves(schema.getQueryType()!)).toEqual([
       {
-        name: 'resultPagination',
-        middlewares: [
-        ],
+        name: "resultPagination",
+        middlewares: [],
         resolver: ResultResolver,
         resolve: ResultResolver.prototype.resultPagination,
       },
-    ])
+    ]);
+  });
 
-  })
-
-  it('test createGraphQLSchema, interface', async () => {
-
+  it("test createGraphQLSchema, interface", async () => {
     const GraphQLResult = new GraphQLInterfaceType({
-      name: 'Result',
+      name: "Result",
       fields: {
         id: { type: GraphQLNonNull(GraphQLID) },
       },
-    })
+    });
 
     interface Result {
-      id: string
+      id: string;
     }
 
     @GraphityEntity({
@@ -570,7 +585,7 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
     })
     class Movie implements Result {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
     @GraphityEntity({
@@ -578,19 +593,18 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
     })
     class Actor implements Result {
       @Field(GraphQLNonNull(GraphQLID))
-      id!: string
+      id!: string;
     }
 
     @GraphityResolver(() => GraphQLResult)
     class ResultResolver {
       @Query({
-        returns: node => GraphQLNonNull(GraphQLList(GraphQLNonNull(node))),
+        returns: (node) => GraphQLNonNull(GraphQLList(GraphQLNonNull(node))),
       })
       resultPagination() {
         //
       }
     }
-
 
     const schema = createGraphQLSchema({
       resolvers: [
@@ -600,7 +614,7 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
         Movie,
         Actor,
       ],
-    })
+    });
 
     expect(schema).toEqualGraphQLSchema(`
       type Actor implements Result {
@@ -618,19 +632,17 @@ describe('@graphity/schema, schema/createGraphQLSchema', () => {
       interface Result {
         id: ID!
       }
-    `)
+    `);
 
-    const storage = MetadataStorage.getGlobalStorage()
+    const storage = MetadataStorage.getGlobalStorage();
 
     expect(storage.findGraphQLFieldResolves(schema.getQueryType()!)).toEqual([
       {
-        name: 'resultPagination',
-        middlewares: [
-        ],
+        name: "resultPagination",
+        middlewares: [],
         resolver: ResultResolver,
         resolve: ResultResolver.prototype.resultPagination,
       },
-    ])
-  })
-
-})
+    ]);
+  });
+});

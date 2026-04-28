@@ -1,2 +1,1 @@
-
-export { ServerLambda } from './server-lambda'
+export { ServerLambda } from "./server-lambda";

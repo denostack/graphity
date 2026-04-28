@@ -1,6 +1,5 @@
-
 module.exports = {
-  type: 'mysql',
+  type: "mysql",
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_DATABASE,
@@ -8,11 +7,11 @@ module.exports = {
   password: process.env.DB_PASSWORD,
   synchronize: false,
   logging: false,
-  migrationsTableName: 'migrations',
+  migrationsTableName: "migrations",
   migrations: [
-    'dist/migrations/*.js',
+    "dist/migrations/*.js",
   ],
   cli: {
-    migrationsDir: 'src/migrations',
+    migrationsDir: "src/migrations",
   },
-}
+};

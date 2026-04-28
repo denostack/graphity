@@ -1,28 +1,27 @@
-import { Field, GraphityEntity } from 'graphity'
-import { GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-
+import { Field, GraphityEntity } from "graphity";
+import { GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @GraphityEntity({
-  name: 'Todo',
-  description: 'Todo Entity',
+  name: "Todo",
+  description: "Todo Entity",
 })
-@Entity({ name: 'todos' })
+@Entity({ name: "todos" })
 export class Todo {
-  @Field(_ => GraphQLNonNull(GraphQLID))
+  @Field((_) => GraphQLNonNull(GraphQLID))
   @PrimaryGeneratedColumn()
-  id!: string | number
+  id!: string | number;
 
-  @Column({ type: String, name: 'user_id' })
-  userId!: string | number
+  @Column({ type: String, name: "user_id" })
+  userId!: string | number;
 
-  @Field(_ => GraphQLNonNull(GraphQLString), {
-    description: 'do what you want to do',
+  @Field((_) => GraphQLNonNull(GraphQLString), {
+    description: "do what you want to do",
   })
   @Column({ type: String })
-  title!: string
+  title!: string;
 
-  @Field(_ => GraphQLNonNull(GraphQLBoolean))
+  @Field((_) => GraphQLNonNull(GraphQLBoolean))
   @Column({ type: Boolean, default: false })
-  completed!: boolean
+  completed!: boolean;
 }

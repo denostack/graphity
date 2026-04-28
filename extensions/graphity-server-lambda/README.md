@@ -14,41 +14,40 @@ npm install @graphity/server-lambda --save
 ```
 
 ```typescript
-import { APIGatewayProxyHandler } from 'aws-lambda'
+import { APIGatewayProxyHandler } from "aws-lambda";
 
-import { Graphity } from 'graphity'
-import { ServerLambda } from '@graphity/server-lambda'
+import { Graphity } from "graphity";
+import { ServerLambda } from "@graphity/server-lambda";
 
 const graphity = new Graphity({
   resolvers: [
     HomeResolver,
     /* ... */
   ],
-})
+});
 
-graphity.register(new AuthProvider())
-graphity.register(new AwsProvider())
-graphity.register(new TypeormProvider())
+graphity.register(new AuthProvider());
+graphity.register(new AwsProvider());
+graphity.register(new TypeormProvider());
 
-const server = new ServerLambda(graphity) // without boot
+const server = new ServerLambda(graphity); // without boot
 
-export const handler: APIGatewayProxyHandler = (event, ctx, callback) => server.execute(event, ctx, callback)
+export const handler: APIGatewayProxyHandler = (event, ctx, callback) => server.execute(event, ctx, callback);
 ```
-
 
 ## Options
 
 ```typescript
 interface ServerLambdaOptions {
-  callbackWaitsForEmptyEventLoop?: boolean
+  callbackWaitsForEmptyEventLoop?: boolean;
   cors?: {
-    origin?: boolean | string | string[],
-    methods?: string | string[],
-    allowedHeaders?: string | string[],
-    exposedHeaders?: string | string[],
-    credentials?: boolean,
-    maxAge?: number,
-  }
+    origin?: boolean | string | string[];
+    methods?: string | string[];
+    allowedHeaders?: string | string[];
+    exposedHeaders?: string | string[];
+    credentials?: boolean;
+    maxAge?: number;
+  };
 }
 ```
 
@@ -59,10 +58,10 @@ To use CORS, simply set the following options.
 ```typescript
 const server = new ServerLambda(graphity, {
   cors: {
-    origin: '*',
+    origin: "*",
     credentials: true,
   },
-})
+});
 ```
 
 **callbackWaitsForEmptyEventLoop**
@@ -72,7 +71,8 @@ When using a persistent connection such as a database, there may be no response.
 ```typescript
 const server = new ServerLambda(graphity, {
   callbackWaitsForEmptyEventLoop: false,
-})
+});
 ```
 
-For more information, see [AWS Lambda Context Object in Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html).
+For more information, see
+[AWS Lambda Context Object in Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html).

@@ -1,11 +1,11 @@
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql'
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 
-import { GraphQLObject } from './graphql-object'
+import { GraphQLObject } from "./graphql-object";
 
-describe('testsuite of helpers/graphql-object', () => {
-  it('test simple', () => {
+describe("testsuite of helpers/graphql-object", () => {
+  it("test simple", () => {
     const object = GraphQLObject({
-      name: 'User',
+      name: "User",
       fields: {
         id: GraphQLNonNull(GraphQLID),
         name: GraphQLString,
@@ -16,7 +16,7 @@ describe('testsuite of helpers/graphql-object', () => {
           zipcode: GraphQLString,
         },
       },
-    })
+    });
 
     expect(object).toEqualGraphQLType(`
       type User {
@@ -25,13 +25,13 @@ describe('testsuite of helpers/graphql-object', () => {
         email: String
         address: UserAddress
       }
-    `)
+    `);
     expect(object.getFields().address.type).toEqualGraphQLType(`
       type UserAddress {
         address1: String!
         address2: String
         zipcode: String
       }
-    `)
-  })
-})
+    `);
+  });
+});

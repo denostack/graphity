@@ -1,7 +1,6 @@
+export * from "./interfaces/utils";
+export * from "./interfaces/restful";
 
-export * from './interfaces/utils'
-export * from './interfaces/restful'
+export { GraphQLExecutor } from "./restful/graphql-executor";
 
-export { GraphQLExecutor } from './restful/graphql-executor'
-
-export { createExpressAdapter } from './adapter/create-express-adapter'
+export { createExpressAdapter } from "./adapter/create-express-adapter";

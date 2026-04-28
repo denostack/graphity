@@ -1,3 +1,2 @@
-
-export * from './interfaces'
-export { JwtAuthBuilder } from './JwtAuthBuilder'
+export * from "./interfaces";
+export { JwtAuthBuilder } from "./JwtAuthBuilder";

@@ -1,16 +1,15 @@
-import { GraphQLArgument, GraphQLObjectType, isObjectType } from 'graphql'
+import { GraphQLArgument, GraphQLObjectType, isObjectType } from "graphql";
 
-import { MetadataStorable } from '../interfaces/metadata'
-import { MiddlewareClass } from '../interfaces/middleware'
-import { resolveEntityFactory } from './resolveEntityFactory'
-import { resolveReturnEntityFactory } from './resolveReturnEntityFactory'
-
+import { MetadataStorable } from "../interfaces/metadata";
+import { MiddlewareClass } from "../interfaces/middleware";
+import { resolveEntityFactory } from "./resolveEntityFactory";
+import { resolveReturnEntityFactory } from "./resolveReturnEntityFactory";
 
 export interface CreateQueryObjectParams {
-  storage: MetadataStorable
-  name: string
-  middlewares: MiddlewareClass[]
-  resolvers: Function[]
+  storage: MetadataStorable;
+  name: string;
+  middlewares: MiddlewareClass[];
+  resolvers: Function[];
 }
 
 export function createQueryObject({
@@ -19,30 +18,29 @@ export function createQueryObject({
   middlewares,
   resolvers,
 }: CreateQueryObjectParams): GraphQLObjectType {
-
   const queryObjectType = new GraphQLObjectType({
     name,
     fields: {},
-  })
+  });
 
   for (const resolver of resolvers) {
-    const metaResolver = storage.resolvers.get(resolver)
+    const metaResolver = storage.resolvers.get(resolver);
     if (!metaResolver) {
-      continue
+      continue;
     }
 
-    const resolverObjectType = resolveEntityFactory(metaResolver.typeFactory, { storage })
+    const resolverObjectType = resolveEntityFactory(metaResolver.typeFactory, { storage });
 
     for (const metaQuery of storage.queries.get(resolver) ?? []) {
-      const parentObjectType = typeof metaQuery.parent === 'function'
+      const parentObjectType = typeof metaQuery.parent === "function"
         ? resolveEntityFactory(metaQuery.parent, { storage })
-        : queryObjectType
+        : queryObjectType;
 
       if (!isObjectType(parentObjectType)) {
-        continue
+        continue;
       }
 
-      const fields = parentObjectType.getFields()
+      const fields = parentObjectType.getFields();
 
       fields[metaQuery.name] = {
         name: metaQuery.name,
@@ -57,15 +55,15 @@ export function createQueryObject({
               deprecationReason: arg.deprecationReason,
               extensions: null,
               astNode: null,
-            }
+            };
           })
           : [],
         description: metaQuery.description,
-        isDeprecated: typeof metaQuery.deprecated === 'string',
-        deprecationReason: typeof metaQuery.deprecated === 'string' ? metaQuery.deprecated : undefined,
+        isDeprecated: typeof metaQuery.deprecated === "string",
+        deprecationReason: typeof metaQuery.deprecated === "string" ? metaQuery.deprecated : undefined,
         extensions: null,
         astNode: null,
-      }
+      };
       storage.saveGraphQLFieldResolve(parentObjectType, {
         name: metaQuery.name,
         middlewares: parentObjectType === queryObjectType
@@ -73,9 +71,8 @@ export function createQueryObject({
           : metaResolver.middlewares.concat(metaQuery.middlewares),
         resolver: metaQuery.target,
         resolve: metaQuery.target.prototype[metaQuery.property],
-      })
-
+      });
     }
   }
-  return queryObjectType
+  return queryObjectType;
 }

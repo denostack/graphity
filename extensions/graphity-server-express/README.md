@@ -14,20 +14,20 @@ npm install @graphity/server-express --save
 ```
 
 ```typescript
-import { Graphity } from 'graphity'
-import { ServerExpress } from '@graphity/server-express'
+import { Graphity } from "graphity";
+import { ServerExpress } from "@graphity/server-express";
 
 const graphity = new Graphity({
   resolvers: [
     HomeResolver,
     /* ... */
   ],
-})
+});
 
-graphity.register(new AuthProvider())
-graphity.register(new AwsProvider())
-graphity.register(new TypeormProvider())
+graphity.register(new AuthProvider());
+graphity.register(new AwsProvider());
+graphity.register(new TypeormProvider());
 
-const server = new ServerExpress(graphity) // without boot
-server.start(8080)
+const server = new ServerExpress(graphity); // without boot
+server.start(8080);
 ```

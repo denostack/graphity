@@ -1,44 +1,43 @@
-
-export type BatchLockFinish = () => Promise<void>
-export type BatchLockStart = () => BatchLockFinish
+export type BatchLockFinish = () => Promise<void>;
+export type BatchLockStart = () => BatchLockFinish;
 
 interface Deferred {
-  count: number
-  promise: Promise<void>
-  resolve: (value: void) => void
+  count: number;
+  promise: Promise<void>;
+  resolve: (value: void) => void;
 }
 
 function createDeferred(): Deferred {
-  const deferred = { count: 0 } as Deferred
+  const deferred = { count: 0 } as Deferred;
   deferred.promise = new Promise((resolve) => {
-    deferred.resolve = resolve
-  })
+    deferred.resolve = resolve;
+  });
 
-  return deferred
+  return deferred;
 }
 
 function createDone(lock: Deferred): BatchLockFinish {
   return () => {
-    lock.count--
+    lock.count--;
     if (lock.count <= 0) {
-      lock.resolve()
+      lock.resolve();
     }
-    return lock.promise
-  }
+    return lock.promise;
+  };
 }
 
 export function createBatchLock(): BatchLockStart {
-  let lock = createDeferred()
-  let timeout = null as any | null
+  let lock = createDeferred();
+  let timeout = null as any | null;
 
   return () => {
-    lock.count++
+    lock.count++;
     if (!timeout) {
       timeout = setTimeout(() => {
-        lock = createDeferred()
-        timeout = null
-      }, 0)
+        lock = createDeferred();
+        timeout = null;
+      }, 0);
     }
-    return createDone(lock)
-  }
+    return createDone(lock);
+  };
 }

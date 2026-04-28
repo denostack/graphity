@@ -1,11 +1,10 @@
-import { Graphity } from 'graphity'
+import { Graphity } from "graphity";
 
-import { AuthProvider } from '../providers/AuthProvider'
-import { OpenAuthProvider } from '../providers/OpenAuthProvider'
-import { TypeormProvider } from '../providers/TypeormProvider'
-import { AuthResolver } from '../resolvers/AuthResolver'
-import { TodoResolver } from '../resolvers/TodoResolver'
-
+import { AuthProvider } from "../providers/AuthProvider";
+import { OpenAuthProvider } from "../providers/OpenAuthProvider";
+import { TypeormProvider } from "../providers/TypeormProvider";
+import { AuthResolver } from "../resolvers/AuthResolver";
+import { TodoResolver } from "../resolvers/TodoResolver";
 
 export function createGraphityApp() {
   const graphity = new Graphity({
@@ -13,11 +12,11 @@ export function createGraphityApp() {
       AuthResolver,
       TodoResolver,
     ],
-  })
+  });
 
-  graphity.register(new AuthProvider())
-  graphity.register(new OpenAuthProvider())
-  graphity.register(new TypeormProvider())
+  graphity.register(new AuthProvider());
+  graphity.register(new OpenAuthProvider());
+  graphity.register(new TypeormProvider());
 
-  return graphity
+  return graphity;
 }

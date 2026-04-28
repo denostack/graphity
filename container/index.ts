@@ -1,12 +1,11 @@
+export * from "./interfaces/common";
+export * from "./interfaces/container";
+export * from "./interfaces/metadata";
 
-export * from './interfaces/common'
-export * from './interfaces/container'
-export * from './interfaces/metadata'
+export { UndefinedError } from "./errors/UndefinedError";
 
-export { UndefinedError } from './errors/UndefinedError'
+export { Inject } from "./decorator/Inject";
 
-export { Inject } from './decorator/Inject'
+export { metadata } from "./metadata/metadata";
 
-export { metadata } from './metadata/metadata'
-
-export { Container } from './container/Container'
+export { Container } from "./container/Container";

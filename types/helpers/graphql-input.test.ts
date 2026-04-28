@@ -1,12 +1,12 @@
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql'
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 
-import { GraphQLInput } from './graphql-input'
+import { GraphQLInput } from "./graphql-input";
 
-describe('testsuite of helpers/graphql-input', () => {
-  it('test simple', () => {
+describe("testsuite of helpers/graphql-input", () => {
+  it("test simple", () => {
     const input = GraphQLInput({
-      name: 'CreateUser',
-      description: 'create user input!',
+      name: "CreateUser",
+      description: "create user input!",
       fields: {
         id: GraphQLNonNull(GraphQLID),
         name: GraphQLString,
@@ -17,7 +17,7 @@ describe('testsuite of helpers/graphql-input', () => {
           zipcode: GraphQLString,
         },
       },
-    })
+    });
     expect(input).toEqualGraphQLType(`
     """create user input!"""
       input CreateUser {
@@ -26,13 +26,13 @@ describe('testsuite of helpers/graphql-input', () => {
         email: String
         address: CreateUserAddress
       }
-    `)
+    `);
     expect(input.getFields().address.type).toEqualGraphQLType(`
       input CreateUserAddress {
         address1: String!
         address2: String
         zipcode: String
       }
-    `)
-  })
-})
+    `);
+  });
+});

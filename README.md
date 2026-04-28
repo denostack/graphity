@@ -14,7 +14,8 @@
   <a href="https://david-dm.org/wan2land/graphity?type=dev"><img alt="devDependencies Status" src="https://img.shields.io/david/dev/wan2land/graphity.svg?style=flat-square" /></a>
 </p>
 
-**Graphity** is a library that makes typescript and GraphQL easy to use. As much as possible, the object of [GraphQL.js](https://github.com/graphql/graphql-js) can be used as it is.
+**Graphity** is a library that makes typescript and GraphQL easy to use. As much as possible, the object of
+[GraphQL.js](https://github.com/graphql/graphql-js) can be used as it is.
 
 ## Projects
 
@@ -32,7 +33,7 @@
 
 **Miscellaneous**
 
-- 
+-
 
 **Extensions(Experimantal)**
 
@@ -40,7 +41,8 @@
 
 ## Installation
 
-Currently, **Graphity** is only responsible for the Schema of GraphQL and can be run through [Apollo Server](https://github.com/apollographql/apollo-server).
+Currently, **Graphity** is only responsible for the Schema of GraphQL and can be run through
+[Apollo Server](https://github.com/apollographql/apollo-server).
 
 ```
 npm i graphity apollo-server
@@ -66,24 +68,23 @@ set this option in `tsconfig.json` file of your project.
 Let's create a Todo list using Graphity. The minimum unit in Graphity is Entity.
 
 ```ts
-import { Field, GraphityEntity } from "graphity"
-import { GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString } from "graphql"
-
+import { Field, GraphityEntity } from "graphity";
+import { GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
 
 @GraphityEntity({
   description: "todo entity",
 })
 export class Todo {
-  @Field(type => GraphQLID)
-  public id!: string
+  @Field((type) => GraphQLID)
+  public id!: string;
 
-  @Field(type => GraphQLNonNull(GraphQLString), {
+  @Field((type) => GraphQLNonNull(GraphQLString), {
     description: "do what you want to do",
   })
-  public contents!: string | null
+  public contents!: string | null;
 
-  @Field(type => GraphQLBoolean)
-  public isDone!: boolean
+  @Field((type) => GraphQLBoolean)
+  public isDone!: boolean;
 }
 ```
 
@@ -103,37 +104,30 @@ type Todo {
 Now let's create a **Resolver** that returns **Todo Entity**. If you create an entire CRUD with an array without a DB:
 
 ```ts
-import {
-  GraphQLListOf,
-  GraphityResolver,
-  listOf,
-  Mutation,
-  Query
-  } from "graphity"
-import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql"
-import { Todo } from "../entities/todo"
+import { GraphityResolver, GraphQLListOf, listOf, Mutation, Query } from "graphity";
+import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
+import { Todo } from "../entities/todo";
 
-let increment = 1
+let increment = 1;
 
-@GraphityResolver(type => Todo)
+@GraphityResolver((type) => Todo)
 export class TodoResolver {
-
-  public repo: Todo[] = []
+  public repo: Todo[] = [];
 
   @Query({
-    returns: todo => GraphQLListOf(todo),
+    returns: (todo) => GraphQLListOf(todo),
   })
   public todos() {
-    return listOf(this.repo)
+    return listOf(this.repo);
   }
 
   @Query({
     input: {
-      id: {type: GraphQLID},
+      id: { type: GraphQLID },
     },
   })
-  public todo(parent: null, input: {id: string}) {
-    return this.repo.find(({id}) => id === input.id)
+  public todo(parent: null, input: { id: string }) {
+    return this.repo.find(({ id }) => id === input.id);
   }
 
   @Mutation({
@@ -143,14 +137,14 @@ export class TodoResolver {
       },
     },
   })
-  public createTodo(parent: null, input: {contents?: string | null}) {
-    const id = increment++
+  public createTodo(parent: null, input: { contents?: string | null }) {
+    const id = increment++;
     const todo = Object.assign(new Todo(), {
       id: `${id}`,
       contents: input.contents,
-    })
-    this.repo.push(todo)
-    return todo
+    });
+    this.repo.push(todo);
+    return todo;
   }
 
   @Mutation({
@@ -163,15 +157,15 @@ export class TodoResolver {
       },
     },
   })
-  public updateTodo(parent: null, input: {id: string, contents?: string | null}) {
-    const todo = this.repo.find(({id}) => id === input.id)
+  public updateTodo(parent: null, input: { id: string; contents?: string | null }) {
+    const todo = this.repo.find(({ id }) => id === input.id);
     if (!todo) {
-      return null
+      return null;
     }
     if (typeof input.contents !== "undefined") {
-      todo.contents = input.contents
+      todo.contents = input.contents;
     }
-    return todo
+    return todo;
   }
 
   @Mutation({
@@ -182,13 +176,13 @@ export class TodoResolver {
     },
     description: "change 'isDone' to true",
   })
-  public doneTodo(parent: null, input: {id: string}) {
-    const todo = this.repo.find(({id}) => id === input.id)
+  public doneTodo(parent: null, input: { id: string }) {
+    const todo = this.repo.find(({ id }) => id === input.id);
     if (!todo) {
-      return null
+      return null;
     }
-    todo.isDone = true
-    return todo
+    todo.isDone = true;
+    return todo;
   }
 
   @Mutation({
@@ -199,13 +193,13 @@ export class TodoResolver {
     },
     description: "change 'isDone' to false",
   })
-  public undoneTodo(parent: null, input: {id: string}) {
-    const todo = this.repo.find(({id}) => id === input.id)
+  public undoneTodo(parent: null, input: { id: string }) {
+    const todo = this.repo.find(({ id }) => id === input.id);
     if (!todo) {
-      return null
+      return null;
     }
-    todo.isDone = false
-    return todo
+    todo.isDone = false;
+    return todo;
   }
 
   @Mutation({
@@ -215,13 +209,13 @@ export class TodoResolver {
       },
     },
   })
-  public deleteTodo(parent: null, input: {id: string}) {
-    const todo = this.repo.find(({id}) => id === input.id)
+  public deleteTodo(parent: null, input: { id: string }) {
+    const todo = this.repo.find(({ id }) => id === input.id);
     if (!todo) {
-      return null
+      return null;
     }
-    this.repo.splice(this.repo.indexOf(todo), 1)
-    return todo
+    this.repo.splice(this.repo.indexOf(todo), 1);
+    return todo;
   }
 }
 ```
@@ -255,24 +249,22 @@ type ListOfTodo {
 And on the server, you can do the following:
 
 ```typescript
-
-import { ApolloServer } from "apollo-server"
-import { createSchema } from "graphity"
-import { TodoResolver } from "./resolvers/todo-resolver"
+import { ApolloServer } from "apollo-server";
+import { createSchema } from "graphity";
+import { TodoResolver } from "./resolvers/todo-resolver";
 
 const app = new Graphity({
   resolvers: [
     TodoResolver,
   ],
-})
+});
 
 const server = new ApolloServer({
   schema: app.createSchema(),
   context: ({ req }) => app.createContext(req),
-})
+});
 
-server.listen(8888)
-
+server.listen(8888);
 ```
 
 ## License

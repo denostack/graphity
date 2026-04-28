@@ -1,4 +1,4 @@
-import { GraphQLInt, GraphQLList, GraphQLNamedType, GraphQLNonNull, GraphQLObjectType } from 'graphql'
+import { GraphQLInt, GraphQLList, GraphQLNamedType, GraphQLNonNull, GraphQLObjectType } from "graphql";
 
 export function GraphQLListOf(type: GraphQLNamedType, name?: string) {
   return new GraphQLObjectType({
@@ -7,5 +7,5 @@ export function GraphQLListOf(type: GraphQLNamedType, name?: string) {
       count: { type: GraphQLNonNull(GraphQLInt) },
       nodes: { type: GraphQLNonNull(GraphQLList(GraphQLNonNull(type))) },
     },
-  })
+  });
 }
