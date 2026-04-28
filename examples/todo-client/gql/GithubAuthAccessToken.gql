@@ -1,9 +1,0 @@
-mutation GithubAuthAccessToken(
-  $code: String!
-) {
-  accessToken: githubAuthAccessToken(
-    code: $code
-  ) {
-    accessToken
-  }
-}

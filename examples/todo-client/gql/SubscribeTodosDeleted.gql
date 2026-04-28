@@ -1,5 +1,0 @@
-subscription SubscribeTodosDeleted {
-  todos: subscribeTodosDeleted {
-    id
-  }
-}

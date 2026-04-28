@@ -1,7 +1,0 @@
-subscription SubscribeTodoCreated {
-  todo: subscribeTodoCreated {
-    id
-    title
-    completed
-  }
-}
